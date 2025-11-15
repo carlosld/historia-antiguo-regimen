@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Historia - Antiguo Régimen e Ilustración</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏰 Test de Historia</h1>
+            <h2>Antiguo Régimen e Ilustración</h2>
+        </header>
+
+        <div id="quiz-container">
+            <div id="start-screen" class="screen active">
+                <div class="welcome-box">
+                    <h3>¡Bienvenida al Test de Historia! 📚</h3>
+                    <p>Pon a prueba tus conocimientos sobre:</p>
+                    <ul>
+                        <li>🏰 Antiguo Régimen e Ilustración</li>
+                        <li>🇺🇸 Revolución Americana</li>
+                        <li>🇫🇷 Revolución Francesa</li>
+                        <li>⚔️ Napoleón y Revoluciones del siglo XIX</li>
+                    </ul>
+                    <p class="info">30 preguntas • 4 opciones cada una</p>
+                    <button id="start-btn" class="btn btn-primary">Comenzar Test</button>
+                </div>
+            </div>
+
+            <div id="quiz-screen" class="screen">
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+                <div class="question-info">
+                    <span id="question-number">Pregunta 1 de 30</span>
+                    <span id="score-display">Aciertos: 0</span>
+                </div>
+
+                <div id="question-container" class="question-box">
+                    <h3 id="question-text"></h3>
+                    <div id="options-container" class="options">
+                        <!-- Las opciones se generarán dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="navigation">
+                    <button id="next-btn" class="btn btn-primary" disabled>Siguiente</button>
+                </div>
+            </div>
+
+            <div id="results-screen" class="screen">
+                <div class="results-box">
+                    <h3>🎉 ¡Test Completado!</h3>
+                    <div class="final-score">
+                        <div class="score-circle">
+                            <span id="final-score">0</span>
+                            <span class="score-total">/ 30</span>
+                        </div>
+                    </div>
+                    <div id="result-message" class="result-message"></div>
+                    <div id="percentage" class="percentage"></div>
+                    
+                    <div class="results-actions">
+                        <button id="review-btn" class="btn btn-secondary">Ver Respuestas</button>
+                        <button id="restart-btn" class="btn btn-primary">Repetir Test</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="review-screen" class="screen">
+                <h3>📋 Revisión de Respuestas</h3>
+                <div id="review-container"></div>
+                <button id="back-to-results-btn" class="btn btn-secondary">Volver a Resultados</button>
+                <button id="restart-from-review-btn" class="btn btn-primary">Repetir Test</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
