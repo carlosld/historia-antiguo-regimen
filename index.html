@@ -14,18 +14,83 @@
         </header>
 
         <div id="quiz-container">
-            <div id="start-screen" class="screen active">
+            <div id="menu-screen" class="screen active">
                 <div class="welcome-box">
                     <h3>¡Bienvenida al Test de Historia! 📚</h3>
-                    <p>Pon a prueba tus conocimientos sobre:</p>
-                    <ul>
-                        <li>🏰 Antiguo Régimen e Ilustración</li>
-                        <li>🇺🇸 Revolución Americana</li>
-                        <li>🇫🇷 Revolución Francesa</li>
-                        <li>⚔️ Napoleón y Revoluciones del siglo XIX</li>
-                    </ul>
-                    <p class="info">30 preguntas • 4 opciones cada una</p>
-                    <button id="start-btn" class="btn btn-primary">Comenzar Test</button>
+                    <p>Selecciona el test que quieres realizar:</p>
+                    <div class="test-selection">
+                        <div class="test-card" data-test="general">
+                            <div class="test-icon">📖</div>
+                            <h4>Test General Completo</h4>
+                            <p>Repaso completo de todos los temas</p>
+                            <span class="test-info">60 preguntas</span>
+                        </div>
+                        <div class="test-card" data-test="antiguo-regimen">
+                            <div class="test-icon">🏰</div>
+                            <h4>El Antiguo Régimen</h4>
+                            <p>Sistema social y político anterior a la Revolución</p>
+                            <span class="test-info">20 preguntas</span>
+                        </div>
+                        <div class="test-card" data-test="ilustracion">
+                            <div class="test-icon">🧠</div>
+                            <h4>La Ilustración</h4>
+                            <p>Razón, ciencia y despotismo ilustrado</p>
+                            <span class="test-info">20 preguntas</span>
+                        </div>
+                        <div class="test-card" data-test="revolucion-americana">
+                            <div class="test-icon">🇺🇸</div>
+                            <h4>Revolución Americana</h4>
+                            <p>Independencia de las Trece Colonias</p>
+                            <span class="test-info">20 preguntas</span>
+                        </div>
+                        <div class="test-card" data-test="revolucion-francesa">
+                            <div class="test-icon">🇫🇷</div>
+                            <h4>Revolución Francesa</h4>
+                            <p>Del Antiguo Régimen a la República</p>
+                            <span class="test-info">40 preguntas</span>
+                        </div>
+                        <div class="test-card" data-test="napoleon">
+                            <div class="test-icon">⚔️</div>
+                            <h4>El Imperio Napoleónico y la Restauración</h4>
+                            <p>Del Directorio al Imperio, caída de Napoleón y Congreso de Viena</p>
+                            <span class="test-info">25 preguntas</span>
+                        </div>
+                        <div class="test-card" data-test="revoluciones-1830-1848">
+                            <div class="test-icon">🔥</div>
+                            <h4>Revoluciones de 1830 y 1848</h4>
+                            <p>Oleadas revolucionarias liberales y nacionalistas en Europa</p>
+                            <span class="test-info">20 preguntas</span>
+                        </div>
+                    </div>
+                    <div class="menu-actions">
+                        <button id="stats-btn" class="btn btn-secondary">📊 Ver Estadísticas</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="start-screen" class="screen">
+                <div class="welcome-box">
+                    <h3 id="test-title">Test de Historia</h3>
+                    <p id="test-description">Descripción del test</p>
+                    <p class="info" id="test-info">0 preguntas • 4 opciones cada una</p>
+                    <div class="start-buttons">
+                        <button id="back-to-menu-btn" class="btn btn-secondary">Volver al Menú</button>
+                        <button id="start-btn" class="btn btn-primary">Comenzar Test</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="stats-screen" class="screen">
+                <div class="stats-container">
+                    <h3>📊 Estadísticas</h3>
+                    <div id="stats-content">
+                        <!-- Las estadísticas se generarán dinámicamente -->
+                    </div>
+                    <div class="stats-actions">
+                        <button id="practice-mistakes-btn" class="btn btn-primary">💡 Repasar Preguntas Más Falladas</button>
+                        <button id="clear-stats-btn" class="btn btn-danger">🗑️ Borrar Todas las Estadísticas</button>
+                        <button id="back-to-menu-from-stats-btn" class="btn btn-secondary">Volver al Menú</button>
+                    </div>
                 </div>
             </div>
 
@@ -56,7 +121,7 @@
                     <div class="final-score">
                         <div class="score-circle">
                             <span id="final-score">0</span>
-                            <span class="score-total">/ 30</span>
+                            <span class="score-total" id="score-total">/ 30</span>
                         </div>
                     </div>
                     <div id="result-message" class="result-message"></div>
@@ -65,6 +130,7 @@
                     <div class="results-actions">
                         <button id="review-btn" class="btn btn-secondary">Ver Respuestas</button>
                         <button id="restart-btn" class="btn btn-primary">Repetir Test</button>
+                        <button id="menu-from-results-btn" class="btn btn-secondary">Volver al Menú</button>
                     </div>
                 </div>
             </div>
@@ -74,10 +140,21 @@
                 <div id="review-container"></div>
                 <button id="back-to-results-btn" class="btn btn-secondary">Volver a Resultados</button>
                 <button id="restart-from-review-btn" class="btn btn-primary">Repetir Test</button>
+                <button id="menu-from-review-btn" class="btn btn-secondary">Volver al Menú</button>
             </div>
         </div>
     </div>
 
+    <!-- Scripts de tests -->
+    <script src="tests/test-general.js"></script>
+    <script src="tests/test-antiguo-regimen.js"></script>
+    <script src="tests/test-ilustracion.js"></script>
+    <script src="tests/test-revolucion-americana.js"></script>
+    <script src="tests/test-revolucion-francesa.js"></script>
+    <script src="tests/test-napoleon.js"></script>
+    <script src="tests/test-revoluciones-1830-1848.js"></script>
+    
+    <!-- Script principal -->
     <script src="app.js"></script>
 </body>
 </html>

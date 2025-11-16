@@ -1,325 +1,112 @@
-// Base de datos de preguntas
-const questions = [
-    {
-        question: "El Antiguo Régimen se caracteriza principalmente por:",
-        options: [
-            "Democracia y libertad de expresión",
-            "Sociedad igualitaria",
-            "Monarquía absoluta y sociedad estamental",
-            "Sufragio universal"
-        ],
-        correct: 2
+// Base de datos de tests - Se cargan desde archivos externos
+const tests = {};
+
+// Función para registrar un test (será llamada desde cada archivo de test)
+function registerTest(id, testData) {
+    tests[id] = testData;
+}
+
+// Sistema de estadísticas con localStorage
+const StatsManager = {
+    getStats() {
+        const stats = localStorage.getItem('historyTestStats');
+        return stats ? JSON.parse(stats) : {};
     },
-    {
-        question: "¿Qué grupos formaban los estamentos privilegiados?",
-        options: [
-            "Clero y campesinos",
-            "Nobleza y burguesía",
-            "Clero y nobleza",
-            "Burguesía y campesinado"
-        ],
-        correct: 2
+    
+    saveStats(stats) {
+        localStorage.setItem('historyTestStats', JSON.stringify(stats));
     },
-    {
-        question: "El pensamiento ilustrado defendía principalmente:",
-        options: [
-            "La fe y la tradición",
-            "La razón, la ciencia y el progreso",
-            "El poder absoluto de los reyes",
-            "El sometimiento a la religión"
-        ],
-        correct: 1
+    
+    recordAnswer(testId, questionIndex, isCorrect) {
+        const stats = this.getStats();
+        
+        if (!stats[testId]) {
+            stats[testId] = {
+                attempts: 0,
+                totalCorrect: 0,
+                totalIncorrect: 0,
+                questions: {}
+            };
+        }
+        
+        if (!stats[testId].questions[questionIndex]) {
+            stats[testId].questions[questionIndex] = {
+                attempts: 0,
+                correct: 0,
+                incorrect: 0
+            };
+        }
+        
+        stats[testId].questions[questionIndex].attempts++;
+        if (isCorrect) {
+            stats[testId].questions[questionIndex].correct++;
+        } else {
+            stats[testId].questions[questionIndex].incorrect++;
+        }
+        
+        this.saveStats(stats);
     },
-    {
-        question: "El lema de los monarcas ilustrados era:",
-        options: [
-            "Todo por el rey y con el rey",
-            "Nada para el pueblo, todo para el rey",
-            "Todo para el pueblo, pero sin el pueblo",
-            "El pueblo manda sobre el rey"
-        ],
-        correct: 2
+    
+    recordTestCompletion(testId, correctAnswers, totalQuestions) {
+        const stats = this.getStats();
+        
+        if (!stats[testId]) {
+            stats[testId] = {
+                attempts: 0,
+                totalCorrect: 0,
+                totalIncorrect: 0,
+                questions: {}
+            };
+        }
+        
+        stats[testId].attempts++;
+        stats[testId].totalCorrect += correctAnswers;
+        stats[testId].totalIncorrect += (totalQuestions - correctAnswers);
+        
+        this.saveStats(stats);
     },
-    {
-        question: "¿Qué pensador propuso la separación de poderes?",
-        options: [
-            "Voltaire",
-            "Rousseau",
-            "Montesquieu",
-            "Adam Smith"
-        ],
-        correct: 2
-    },
-    {
-        question: "¿Cuál fue una consecuencia de las ideas ilustradas?",
-        options: [
-            "El fortalecimiento del absolutismo",
-            "El nacimiento de las revoluciones burguesas",
-            "El dominio del clero",
-            "El fin de la burguesía"
-        ],
-        correct: 1
-    },
-    {
-        question: "La principal causa de la Revolución Americana fue:",
-        options: [
-            "El descontento por los impuestos y la falta de representación",
-            "La invasión francesa de las colonias",
-            "La abolición de la esclavitud",
-            "Las malas cosechas"
-        ],
-        correct: 0
-    },
-    {
-        question: "El Motín del Té ocurrió porque:",
-        options: [
-            "Los colonos querían subir el precio del té",
-            "Los colonos protestaban contra los impuestos británicos",
-            "Los británicos se negaban a comprar té americano",
-            "Las colonias prohibieron el comercio"
-        ],
-        correct: 1
-    },
-    {
-        question: "¿En qué año se firmó la Declaración de Independencia de Estados Unidos?",
-        options: [
-            "1773",
-            "1775",
-            "1776",
-            "1789"
-        ],
-        correct: 2
-    },
-    {
-        question: "La Revolución Americana fue importante para Europa porque:",
-        options: [
-            "Fortaleció a los monarcas absolutos",
-            "Inspiró otras revoluciones con ideas ilustradas",
-            "Terminó con el comercio atlántico",
-            "Aumentó el poder británico"
-        ],
-        correct: 1
-    },
-    {
-        question: "¿Cuál fue la causa inmediata de la Revolución Francesa?",
-        options: [
-            "Las malas cosechas y la crisis financiera del Estado",
-            "El descubrimiento de América",
-            "El aumento del comercio",
-            "La independencia de Italia"
-        ],
-        correct: 0
-    },
-    {
-        question: "Los Estados Generales estaban formados por:",
-        options: [
-            "Nobleza, burguesía y campesinado",
-            "Clero, nobleza y Tercer Estado",
-            "Clero, campesinos y obreros",
-            "Burguesía, artesanos y campesinos"
-        ],
-        correct: 1
-    },
-    {
-        question: "El Juramento del Juego de la Pelota significó:",
-        options: [
-            "La rendición del Tercer Estado",
-            "La unión del pueblo con el rey",
-            "La promesa de crear una constitución",
-            "El regreso del absolutismo"
-        ],
-        correct: 2
-    },
-    {
-        question: "¿Qué ocurrió el 14 de julio de 1789?",
-        options: [
-            "Se proclamó la República",
-            "La toma de la Bastilla",
-            "La coronación de Napoleón",
-            "La ejecución del rey"
-        ],
-        correct: 1
-    },
-    {
-        question: "La Declaración de los Derechos del Hombre y del Ciudadano defendía:",
-        options: [
-            "Privilegios para la nobleza",
-            "Igualdad y libertad ante la ley",
-            "Poder absoluto del rey",
-            "Supremacía del clero"
-        ],
-        correct: 1
-    },
-    {
-        question: "La Constitución de 1791 estableció:",
-        options: [
-            "Una república democrática",
-            "La monarquía absoluta",
-            "Una monarquía constitucional",
-            "El comunismo"
-        ],
-        correct: 2
-    },
-    {
-        question: "Los girondinos representaban a:",
-        options: [
-            "La alta burguesía moderada",
-            "Los campesinos pobres",
-            "Los obreros de París",
-            "El ejército realista"
-        ],
-        correct: 0
-    },
-    {
-        question: "Los jacobinos, liderados por Robespierre, eran:",
-        options: [
-            "Defensores del rey",
-            "Moderados y conservadores",
-            "Radicales que querían una república e igualdad",
-            "Extranjeros aliados"
-        ],
-        correct: 2
-    },
-    {
-        question: "¿Qué institución sustituyó a la Asamblea Legislativa?",
-        options: [
-            "El Directorio",
-            "El Senado",
-            "La Convención Nacional",
-            "El Parlamento Europeo"
-        ],
-        correct: 2
-    },
-    {
-        question: "¿Cómo terminó el reinado de Luis XVI?",
-        options: [
-            "Fue exiliado a Inglaterra",
-            "Abdicó voluntariamente",
-            "Fue ejecutado en la guillotina",
-            "Murió en batalla"
-        ],
-        correct: 2
-    },
-    {
-        question: "El Directorio era:",
-        options: [
-            "Un gobierno formado por cinco miembros",
-            "Una república gobernada por Robespierre",
-            "Un parlamento elegido por el pueblo",
-            "Un régimen absolutista"
-        ],
-        correct: 0
-    },
-    {
-        question: "Napoleón llegó al poder en:",
-        options: [
-            "1789",
-            "1795",
-            "1799",
-            "1804"
-        ],
-        correct: 2
-    },
-    {
-        question: "Como emperador, Napoleón realizó reformas en:",
-        options: [
-            "Educación, leyes y economía",
-            "Agricultura y religión",
-            "Comercio marítimo",
-            "Cultura y nobleza"
-        ],
-        correct: 0
-    },
-    {
-        question: "Napoleón fue derrotado definitivamente en:",
-        options: [
-            "París",
-            "Elba",
-            "Moscú",
-            "Waterloo"
-        ],
-        correct: 3
-    },
-    {
-        question: "¿Qué estableció el Congreso de Viena?",
-        options: [
-            "La independencia de Francia",
-            "La restauración de las monarquías absolutas",
-            "La proclamación de la república",
-            "La división de América"
-        ],
-        correct: 1
-    },
-    {
-        question: "La Santa Alianza fue creada para:",
-        options: [
-            "Defender los derechos humanos",
-            "Impedir nuevas revoluciones",
-            "Expandir el comercio",
-            "Apoyar la independencia americana"
-        ],
-        correct: 1
-    },
-    {
-        question: "Las revoluciones de 1830 tuvieron como resultado:",
-        options: [
-            "El fin de Napoleón",
-            "La independencia de Bélgica",
-            "La unificación de Alemania",
-            "La abdicación de Luis XVI"
-        ],
-        correct: 1
-    },
-    {
-        question: "En las revoluciones de 1848, Francia proclamó:",
-        options: [
-            "La Primera República",
-            "La Segunda República",
-            "La Tercera República",
-            "El Imperio Napoleónico"
-        ],
-        correct: 1
-    },
-    {
-        question: "¿Qué países iniciaron procesos de unificación tras 1848?",
-        options: [
-            "Inglaterra y Francia",
-            "Italia y Alemania",
-            "Bélgica y Holanda",
-            "Austria y Rusia"
-        ],
-        correct: 1
-    },
-    {
-        question: "Una consecuencia general de las revoluciones del siglo XIX fue:",
-        options: [
-            "El regreso del feudalismo",
-            "La expansión de las ideas liberales y nacionales",
-            "La victoria definitiva del absolutismo",
-            "La desaparición de la burguesía"
-        ],
-        correct: 1
+    
+    clearAllStats() {
+        if (confirm('¿Estás segura de que quieres borrar todas las estadísticas? Esta acción no se puede deshacer.')) {
+            localStorage.removeItem('historyTestStats');
+            displayStats();
+        }
     }
-];
+};
 
 // Variables del estado del juego
+let currentTest = null;
+let currentTestId = null;
 let currentQuestion = 0;
 let score = 0;
 let userAnswers = [];
 
 // Elementos del DOM
+const menuScreen = document.getElementById('menu-screen');
 const startScreen = document.getElementById('start-screen');
 const quizScreen = document.getElementById('quiz-screen');
 const resultsScreen = document.getElementById('results-screen');
 const reviewScreen = document.getElementById('review-screen');
+const statsScreen = document.getElementById('stats-screen');
 
+const testCards = document.querySelectorAll('.test-card');
+const backToMenuBtn = document.getElementById('back-to-menu-btn');
 const startBtn = document.getElementById('start-btn');
 const nextBtn = document.getElementById('next-btn');
 const restartBtn = document.getElementById('restart-btn');
 const reviewBtn = document.getElementById('review-btn');
 const backToResultsBtn = document.getElementById('back-to-results-btn');
 const restartFromReviewBtn = document.getElementById('restart-from-review-btn');
+const menuFromResultsBtn = document.getElementById('menu-from-results-btn');
+const menuFromReviewBtn = document.getElementById('menu-from-review-btn');
+const statsBtn = document.getElementById('stats-btn');
+const clearStatsBtn = document.getElementById('clear-stats-btn');
+const backToMenuFromStatsBtn = document.getElementById('back-to-menu-from-stats-btn');
+const practiceMistakesBtn = document.getElementById('practice-mistakes-btn');
 
+const testTitle = document.getElementById('test-title');
+const testDescription = document.getElementById('test-description');
+const testInfo = document.getElementById('test-info');
 const questionText = document.getElementById('question-text');
 const optionsContainer = document.getElementById('options-container');
 const questionNumber = document.getElementById('question-number');
@@ -330,15 +117,52 @@ const resultMessage = document.getElementById('result-message');
 const percentage = document.getElementById('percentage');
 const reviewContainer = document.getElementById('review-container');
 
-// Event Listeners
-startBtn.addEventListener('click', startQuiz);
-nextBtn.addEventListener('click', nextQuestion);
-restartBtn.addEventListener('click', restartQuiz);
-reviewBtn.addEventListener('click', showReview);
-backToResultsBtn.addEventListener('click', backToResults);
-restartFromReviewBtn.addEventListener('click', restartQuiz);
+// Inicialización cuando se carga la página
+document.addEventListener('DOMContentLoaded', initializeApp);
+
+function initializeApp() {
+    // Event Listeners
+    document.querySelectorAll('.test-card').forEach(card => {
+        card.addEventListener('click', () => selectTest(card.dataset.test));
+    });
+    backToMenuBtn.addEventListener('click', () => showScreen(menuScreen));
+    startBtn.addEventListener('click', startQuiz);
+    nextBtn.addEventListener('click', nextQuestion);
+    restartBtn.addEventListener('click', restartQuiz);
+    reviewBtn.addEventListener('click', showReview);
+    backToResultsBtn.addEventListener('click', backToResults);
+    restartFromReviewBtn.addEventListener('click', restartQuiz);
+    menuFromResultsBtn.addEventListener('click', () => showScreen(menuScreen));
+    menuFromReviewBtn.addEventListener('click', () => showScreen(menuScreen));
+    statsBtn.addEventListener('click', () => {
+        displayStats();
+        showScreen(statsScreen);
+    });
+    clearStatsBtn.addEventListener('click', () => StatsManager.clearAllStats());
+    backToMenuFromStatsBtn.addEventListener('click', () => showScreen(menuScreen));
+    practiceMistakesBtn.addEventListener('click', createMistakesTest);
+}
+
+// Función para mezclar un array (algoritmo Fisher-Yates)
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
 
 // Funciones principales
+function selectTest(testId) {
+    currentTest = tests[testId];
+    currentTestId = testId;
+    testTitle.textContent = currentTest.title;
+    testDescription.textContent = currentTest.description;
+    testInfo.textContent = `${currentTest.questions.length} preguntas • 4 opciones cada una`;
+    showScreen(startScreen);
+}
+
 function startQuiz() {
     currentQuestion = 0;
     score = 0;
@@ -348,30 +172,43 @@ function startQuiz() {
 }
 
 function displayQuestion() {
-    const question = questions[currentQuestion];
+    const question = currentTest.questions[currentQuestion];
     
     // Actualizar información de la pregunta
     questionText.textContent = question.question;
-    questionNumber.textContent = `Pregunta ${currentQuestion + 1} de ${questions.length}`;
+    questionNumber.textContent = `Pregunta ${currentQuestion + 1} de ${currentTest.questions.length}`;
     scoreDisplay.textContent = `Aciertos: ${score}`;
     
     // Actualizar barra de progreso
-    const progress = ((currentQuestion + 1) / questions.length) * 100;
+    const progress = ((currentQuestion + 1) / currentTest.questions.length) * 100;
     progressFill.style.width = `${progress}%`;
     
     // Limpiar opciones anteriores
     optionsContainer.innerHTML = '';
     
+    // Crear array de opciones con sus índices originales y si es correcta
+    const optionsWithIndex = question.options.map((option, index) => ({
+        text: option,
+        originalIndex: index,
+        isCorrect: index === question.correct
+    }));
+    
+    // Mezclar las opciones aleatoriamente
+    const shuffledOptions = shuffleArray(optionsWithIndex);
+    
     // Crear opciones
     const letters = ['A', 'B', 'C', 'D'];
-    question.options.forEach((option, index) => {
+    shuffledOptions.forEach((option, displayIndex) => {
         const optionElement = document.createElement('div');
         optionElement.className = 'option';
         optionElement.innerHTML = `
-            <span class="option-letter">${letters[index]}</span>
-            <span>${option}</span>
+            <span class="option-letter">${letters[displayIndex]}</span>
+            <span>${option.text}</span>
         `;
-        optionElement.addEventListener('click', () => selectOption(index, optionElement));
+        // Guardar información en el elemento para usarla después
+        optionElement.dataset.originalIndex = option.originalIndex;
+        optionElement.dataset.isCorrect = option.isCorrect;
+        optionElement.addEventListener('click', () => selectOption(option.originalIndex, option.isCorrect, optionElement));
         optionsContainer.appendChild(optionElement);
     });
     
@@ -379,36 +216,40 @@ function displayQuestion() {
     nextBtn.disabled = true;
 }
 
-function selectOption(selectedIndex, selectedElement) {
+function selectOption(selectedIndex, isSelectedCorrect, selectedElement) {
     // Verificar si ya se seleccionó una respuesta
     const options = document.querySelectorAll('.option');
     const alreadyAnswered = Array.from(options).some(opt => opt.classList.contains('disabled'));
     
     if (alreadyAnswered) return;
     
-    const question = questions[currentQuestion];
-    const isCorrect = selectedIndex === question.correct;
+    const question = currentTest.questions[currentQuestion];
     
     // Guardar respuesta del usuario
     userAnswers.push({
         questionIndex: currentQuestion,
         userAnswer: selectedIndex,
         correct: question.correct,
-        isCorrect: isCorrect
+        isCorrect: isSelectedCorrect
     });
     
+    // Registrar estadísticas de la respuesta
+    StatsManager.recordAnswer(currentTestId, currentQuestion, isSelectedCorrect);
+    
     // Actualizar puntuación
-    if (isCorrect) {
+    if (isSelectedCorrect) {
         score++;
         scoreDisplay.textContent = `Aciertos: ${score}`;
     }
     
     // Mostrar respuesta correcta/incorrecta
-    options.forEach((option, index) => {
+    options.forEach((option) => {
         option.classList.add('disabled');
-        if (index === question.correct) {
+        const optionIsCorrect = option.dataset.isCorrect === 'true';
+        
+        if (optionIsCorrect) {
             option.classList.add('correct');
-        } else if (index === selectedIndex && !isCorrect) {
+        } else if (option === selectedElement && !isSelectedCorrect) {
             option.classList.add('incorrect');
         }
     });
@@ -420,7 +261,7 @@ function selectOption(selectedIndex, selectedElement) {
 function nextQuestion() {
     currentQuestion++;
     
-    if (currentQuestion < questions.length) {
+    if (currentQuestion < currentTest.questions.length) {
         displayQuestion();
     } else {
         showResults();
@@ -430,9 +271,13 @@ function nextQuestion() {
 function showResults() {
     showScreen(resultsScreen);
     
-    finalScore.textContent = score;
+    // Registrar finalización del test en estadísticas
+    StatsManager.recordTestCompletion(currentTestId, score, currentTest.questions.length);
     
-    const percentageValue = Math.round((score / questions.length) * 100);
+    finalScore.textContent = score;
+    document.getElementById('score-total').textContent = `/ ${currentTest.questions.length}`;
+    
+    const percentageValue = Math.round((score / currentTest.questions.length) * 100);
     percentage.textContent = `${percentageValue}% de respuestas correctas`;
     
     // Mensaje personalizado según el resultado
@@ -459,7 +304,7 @@ function showReview() {
     const letters = ['A', 'B', 'C', 'D'];
     
     userAnswers.forEach((answer, index) => {
-        const question = questions[answer.questionIndex];
+        const question = currentTest.questions[answer.questionIndex];
         const reviewItem = document.createElement('div');
         reviewItem.className = `review-item ${answer.isCorrect ? 'correct' : 'incorrect'}`;
         
@@ -504,3 +349,210 @@ function showScreen(screen) {
     // Mostrar la pantalla seleccionada
     screen.classList.add('active');
 }
+
+// Función para mostrar estadísticas
+function displayStats() {
+    const statsContent = document.getElementById('stats-content');
+    const stats = StatsManager.getStats();
+    
+    // Mostrar u ocultar el botón de repaso según haya estadísticas
+    const practiceMistakesBtn = document.getElementById('practice-mistakes-btn');
+    
+    if (Object.keys(stats).length === 0) {
+        statsContent.innerHTML = `
+            <div class="no-stats">
+                <div class="no-stats-icon">📊</div>
+                <p>No hay estadísticas disponibles todavía</p>
+                <p style="font-size: 0.9em; color: #999;">Completa algunos tests para ver tus estadísticas aquí</p>
+            </div>
+        `;
+        practiceMistakesBtn.style.display = 'none';
+        return;
+    }
+    
+    practiceMistakesBtn.style.display = 'inline-block';
+    
+    // Calcular cuántas preguntas hay para repaso
+    let totalQuestionsWithStats = 0;
+    Object.keys(stats).forEach(testId => {
+        const testStats = stats[testId];
+        if (testStats.questions) {
+            totalQuestionsWithStats += Object.keys(testStats.questions).length;
+        }
+    });
+    
+    const questionsToReview = Math.min(20, totalQuestionsWithStats);
+    practiceMistakesBtn.innerHTML = `💡 Repasar Preguntas Más Falladas (${questionsToReview} disponibles)`;
+    
+    let html = '';
+    
+    // Recorrer cada test
+    Object.keys(stats).forEach(testId => {
+        const testStats = stats[testId];
+        const testData = tests[testId];
+        
+        if (!testData) return; // Si el test no existe, saltarlo
+        
+        const totalAnswers = testStats.totalCorrect + testStats.totalIncorrect;
+        const accuracy = totalAnswers > 0 ? Math.round((testStats.totalCorrect / totalAnswers) * 100) : 0;
+        
+        html += `
+            <div class="test-stats">
+                <h4>${testData.title}</h4>
+                
+                <div class="stats-summary">
+                    <div class="stat-box attempts">
+                        <div class="stat-label">Tests realizados</div>
+                        <div class="stat-value">${testStats.attempts}</div>
+                    </div>
+                    <div class="stat-box success">
+                        <div class="stat-label">Respuestas correctas</div>
+                        <div class="stat-value">${testStats.totalCorrect}</div>
+                    </div>
+                    <div class="stat-box error">
+                        <div class="stat-label">Respuestas incorrectas</div>
+                        <div class="stat-value">${testStats.totalIncorrect}</div>
+                    </div>
+                    <div class="stat-box accuracy">
+                        <div class="stat-label">Precisión</div>
+                        <div class="stat-value">${accuracy}%</div>
+                    </div>
+                </div>
+                
+                <button class="toggle-questions-btn" onclick="toggleQuestionStats('${testId}')">
+                    Ver estadísticas por pregunta ▼
+                </button>
+                
+                <div id="questions-${testId}" class="question-stats hidden">
+                    <h5>Estadísticas por pregunta</h5>
+                    <div style="display: flex; gap: 15px; margin-bottom: 15px; font-size: 0.85em; flex-wrap: wrap;">
+                        <span><span style="display: inline-block; width: 12px; height: 12px; background: #ef4444; border-radius: 2px; margin-right: 5px;"></span>Precisión < 40%</span>
+                        <span><span style="display: inline-block; width: 12px; height: 12px; background: #f59e0b; border-radius: 2px; margin-right: 5px;"></span>Precisión 40-69%</span>
+                        <span><span style="display: inline-block; width: 12px; height: 12px; background: #10b981; border-radius: 2px; margin-right: 5px;"></span>Precisión ≥ 70%</span>
+                    </div>
+        `;
+        
+        // Recorrer las preguntas
+        Object.keys(testStats.questions).forEach(questionIndex => {
+            const qStats = testStats.questions[questionIndex];
+            const question = testData.questions[parseInt(questionIndex)];
+            const qAccuracy = qStats.attempts > 0 ? Math.round((qStats.correct / qStats.attempts) * 100) : 0;
+            
+            // Determinar clase según precisión
+            let errorClass = 'low-errors';
+            if (qAccuracy < 40) {
+                errorClass = 'high-errors';
+            } else if (qAccuracy < 70) {
+                errorClass = 'medium-errors';
+            }
+            
+            html += `
+                <div class="question-item ${errorClass}">
+                    <div class="question-text">
+                        <strong>P${parseInt(questionIndex) + 1}:</strong> ${question.question.substring(0, 80)}${question.question.length > 80 ? '...' : ''}
+                    </div>
+                    <div class="question-stats-data">
+                        <span class="stat-mini attempts">📝 ${qStats.attempts}</span>
+                        <span class="stat-mini correct">✓ ${qStats.correct}</span>
+                        <span class="stat-mini incorrect">✗ ${qStats.incorrect}</span>
+                        <span class="stat-mini accuracy">${qAccuracy}%</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `
+                </div>
+            </div>
+        `;
+    });
+    
+    statsContent.innerHTML = html;
+}
+
+// Función para mostrar/ocultar estadísticas por pregunta
+function toggleQuestionStats(testId) {
+    const questionsDiv = document.getElementById(`questions-${testId}`);
+    const button = event.target;
+    
+    if (questionsDiv.classList.contains('hidden')) {
+        questionsDiv.classList.remove('hidden');
+        button.textContent = 'Ocultar estadísticas por pregunta ▲';
+    } else {
+        questionsDiv.classList.add('hidden');
+        button.textContent = 'Ver estadísticas por pregunta ▼';
+    }
+}
+
+// Función para crear un test con las preguntas más falladas
+function createMistakesTest() {
+    const stats = StatsManager.getStats();
+    
+    // Recopilar todas las preguntas con sus estadísticas
+    const allQuestions = [];
+    
+    Object.keys(stats).forEach(testId => {
+        const testStats = stats[testId];
+        const testData = tests[testId];
+        
+        if (!testData) return;
+        
+        Object.keys(testStats.questions).forEach(questionIndex => {
+            const qStats = testStats.questions[questionIndex];
+            const qIndex = parseInt(questionIndex);
+            
+            // Solo incluir preguntas que se hayan intentado al menos una vez
+            if (qStats.attempts > 0) {
+                const errorRate = qStats.incorrect / qStats.attempts;
+                
+                allQuestions.push({
+                    testId: testId,
+                    questionIndex: qIndex,
+                    question: testData.questions[qIndex],
+                    errorRate: errorRate,
+                    attempts: qStats.attempts,
+                    incorrect: qStats.incorrect,
+                    correct: qStats.correct
+                });
+            }
+        });
+    });
+    
+    if (allQuestions.length === 0) {
+        alert('No hay suficientes datos de estadísticas para crear un test de repaso. Completa algunos tests primero.');
+        return;
+    }
+    
+    // Ordenar por tasa de error (de mayor a menor) y luego por número de intentos
+    allQuestions.sort((a, b) => {
+        if (b.errorRate !== a.errorRate) {
+            return b.errorRate - a.errorRate;
+        }
+        return b.attempts - a.attempts;
+    });
+    
+    // Tomar las 20 preguntas más falladas (o todas si hay menos de 20)
+    const mistakesQuestions = allQuestions.slice(0, Math.min(20, allQuestions.length));
+    
+    // Calcular estadísticas del conjunto
+    const avgErrorRate = mistakesQuestions.reduce((sum, q) => sum + q.errorRate, 0) / mistakesQuestions.length;
+    const avgAccuracy = Math.round((1 - avgErrorRate) * 100);
+    
+    // Crear un test temporal con estas preguntas
+    const mistakesTest = {
+        title: "💡 Repaso: Preguntas Más Falladas",
+        description: `Repasa las ${mistakesQuestions.length} preguntas que más dificultad te han dado. Precisión promedio actual: ${avgAccuracy}%`,
+        questions: mistakesQuestions.map(q => q.question)
+    };
+    
+    // Registrar el test temporal
+    currentTest = mistakesTest;
+    currentTestId = 'mistakes-practice'; // ID especial para este test
+    
+    // Mostrar pantalla de inicio
+    testTitle.textContent = mistakesTest.title;
+    testDescription.textContent = mistakesTest.description;
+    testInfo.textContent = `${mistakesTest.questions.length} preguntas • ¡Mejora tu puntuación!`;
+    showScreen(startScreen);
+}
+
